@@ -1,0 +1,116 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+<title>使用Selector API实现购物车客户端计算</title>
+<meta charset="utf-8" />
+<style>
+	table{width:600px; text-align:center;
+		border-collapse:collapse;
+	}
+	td,th{border:1px solid black}
+	/* tbody中每行最后一个td背景变为粉色 */
+	tbody>tr>td:last-child{
+		background-color: pink;
+	}
+	tfoot>tr>td:last-child{
+		background-color:yellow;
+	}
+	td[colspan="3"]{text-align:right;}
+</style>
+</head>
+<body>
+	<table id="data">
+		<thead>
+			<tr>
+				<th>商品名称</th>
+				<th>单价</th>
+				<th>数量</th>
+				<th>小计</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>iPhone6</td>
+				<td>¥4488.00</td>
+        <td>
+          <button>-</button>
+          <span>1</span>
+          <button>+</button>
+        </td>
+				<td>¥4488.00</td>
+			</tr>
+			<tr>
+				<td>iPhone6 plus</td>
+				<td>¥5288.00</td>
+				<td>
+          <button>-</button>
+          <span>1</span>
+          <button>+</button>
+				</td>
+				<td>¥5288.00</td>
+			</tr>
+			<tr>
+				<td>iPad Air 2</td>
+				<td>¥4288.00</td>
+        <td>
+          <button>-</button>
+          <span>1</span>
+          <button>+</button>
+        </td>
+				<td>¥4288.00</td>
+			</tr>
+		</tbody>
+		<tfoot>
+			<tr>
+				<td colspan="3">Total: </td>
+				<td>¥14064.00</td>
+			</tr>
+		</tfoot>
+	</table>
+  <script>
+		//1.先找到触发事件的元素：table中的所有button
+		var table=document.getElementById("data");
+		var btns=table.getElementsByTagName("button");
+		//事件绑定
+		//事件：浏览器自动触发的或用于手动触发的页面内容状态的改变
+		//事件处理函数：当事件发生数，自动执行的函数
+		//何时：只要希望在一个元素上发生指定事件时，能执行一项自定义的任务，就要用事件处理函数
+		//如何：事件处理函数需要在编写程序时，就要提前绑定/赋值给元素的事件属性，其实每个元素上都提前定义了一批空的事件属性
+		//为每个btn绑定单击事件处理函数
+		//遍历类数组对象btns中每个按钮
+		for(var btn of btns){
+			//每遍历一个按钮就给他帮绑定单击事件处理函数
+			btn.onclick=function(){
+				//所有事件处理函数中的this，永远指.前的当前元素对象
+				var btn=this;
+				//查找span元素
+				var span=btn.parentNode.children[1];
+				//修改元素。获取span的内容,页面获取的内容都是字符串。必须先转成数字在做计算
+				var n=parseInt(span.innerHTML);
+				if(btn.innerHTML=="+"){
+					n++;
+				}else if(n>1){
+					//否则如果n的内容大于1 就减
+					n--;
+				}
+				span.innerHTML=n;
+				//获取单价
+				var td=btn.parentNode;
+				var price=parseFloat(td.previousElementSibling.innerHTML.slice(1));
+				//小计=单价*数量
+				var subTotal=price*n;
+				td.nextElementSibling.innerHTML=`￥${subTotal.toFixed(2)}`;
+				//计算总计
+				//查找tbody下每行最后一个td
+				var tds=table.querySelectorAll("tbody td:last-child")
+				var total=0;
+				for(var td of tds){
+					total+=parseFloat(td.innerHTML.slice(1));
+				}
+				//将total放入tfoot中最后一个td中
+				table.querySelector("tfoot td:last-child").innerHTML=`￥${total.toFixed(2)}`;
+			}
+		}//外部的btn指向最后一个btn
+	</script>
+</body>
+</html>
